@@ -29,9 +29,24 @@
       "description": "OAuth and authentication endpoints"
     }
   ],
-  "schemes": ["http", "https"],
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "Enter token as: Bearer <JWT token>"
+    }
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
   "paths": {
     "/": {
       "get": {
@@ -55,7 +70,9 @@
     },
     "/auth/github": {
       "get": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Start GitHub OAuth flow",
         "description": "Returns JSON helper in API clients and redirects to GitHub in browser flow.",
         "parameters": [
@@ -81,7 +98,9 @@
     },
     "/auth/callback": {
       "get": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "GitHub OAuth callback",
         "description": "Handles the redirect from GitHub after user authorises the app. Not intended to be called directly from API clients.",
         "parameters": [
@@ -1083,5 +1102,10 @@
         }
       }
     }
-  }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
 }

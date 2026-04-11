@@ -8,6 +8,19 @@ const doc = {
   },
   host: 'localhost:8080',
   schemes: ['http', 'https'],
+  securityDefinitions: {
+    bearerAuth: {
+      type: 'apiKey',
+      name: 'Authorization',
+      in: 'header',
+      description: 'Enter token as: Bearer <JWT token>'
+    }
+  },
+  security: [
+    {
+      bearerAuth: []
+    }
+  ],
   consumes: ['application/json'],
   produces: ['application/json'],
   tags: [
