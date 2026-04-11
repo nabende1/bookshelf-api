@@ -73,7 +73,26 @@ const createApp = () => {
     .use(express.urlencoded({ extended: true }))
     .use(passport.initialize());
 
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  app.get('/swagger.json', (req, res) => {
+    const forwardedProto = req.get('x-forwarded-proto');
+    const scheme = forwardedProto ? forwardedProto.split(',')[0].trim() : req.protocol;
+
+    res.json({
+      ...swaggerDocument,
+      host: req.get('host'),
+      schemes: [scheme]
+    });
+  });
+
+  app.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(null, {
+      swaggerOptions: {
+        url: '/swagger.json'
+      }
+    })
+  );
 
   app.use('/', require('./routes'));
   app.use(notFoundHandler);
