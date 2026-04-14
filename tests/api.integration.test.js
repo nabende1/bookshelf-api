@@ -112,7 +112,7 @@ test('auth routes return expected responses', async () => {
   assert.equal(failureRes.status, 401);
 });
 
-test('books RBAC and CRUD flow works', async () => {
+test('books CRUD flow works', async () => {
   const basePayload = {
     title: 'Integration Testing Guide',
     author: 'QA Team',
@@ -127,18 +127,8 @@ test('books RBAC and CRUD flow works', async () => {
     availableCopies: 3
   };
 
-  const unauthRes = await request(app).post('/books').send(basePayload);
-  assert.equal(unauthRes.status, 401);
-
-  const forbiddenRes = await request(app)
-    .post('/books')
-    .set('Authorization', `Bearer ${userToken}`)
-    .send(basePayload);
-  assert.equal(forbiddenRes.status, 403);
-
   const createRes = await request(app)
     .post('/books')
-    .set('Authorization', `Bearer ${adminToken}`)
     .send(basePayload);
   assert.equal(createRes.status, 201);
   assert.ok(createRes.body.id);
@@ -151,7 +141,6 @@ test('books RBAC and CRUD flow works', async () => {
 
   const updateRes = await request(app)
     .put(`/books/${createdId}`)
-    .set('Authorization', `Bearer ${adminToken}`)
     .send({ availableCopies: 10 });
   assert.equal(updateRes.status, 200);
 
@@ -160,24 +149,17 @@ test('books RBAC and CRUD flow works', async () => {
   assert.equal(verifyRes.body.availableCopies, 10);
 
   const deleteRes = await request(app)
-    .delete(`/books/${createdId}`)
-    .set('Authorization', `Bearer ${adminToken}`);
+    .delete(`/books/${createdId}`);
   assert.equal(deleteRes.status, 200);
 });
 
-test('users admin CRUD and auth protection work', async () => {
-  const forbiddenListRes = await request(app)
-    .get('/users')
-    .set('Authorization', `Bearer ${userToken}`);
-  assert.equal(forbiddenListRes.status, 403);
-
-  const listRes = await request(app).get('/users').set('Authorization', `Bearer ${adminToken}`);
+test('users CRUD works', async () => {
+  const listRes = await request(app).get('/users');
   assert.equal(listRes.status, 200);
   assert.ok(Array.isArray(listRes.body));
 
   const createRes = await request(app)
     .post('/users')
-    .set('Authorization', `Bearer ${adminToken}`)
     .send({
       displayName: 'Created User',
       email: `created-${Date.now()}@example.com`,
@@ -189,22 +171,16 @@ test('users admin CRUD and auth protection work', async () => {
   const createdUserId = createRes.body.id;
 
   const getSingleRes = await request(app)
-    .get(`/users/${createdUserId}`)
-    .set('Authorization', `Bearer ${adminToken}`);
+    .get(`/users/${createdUserId}`);
   assert.equal(getSingleRes.status, 200);
 
   const updateRes = await request(app)
     .put(`/users/${createdUserId}`)
-    .set('Authorization', `Bearer ${adminToken}`)
     .send({ displayName: 'Updated User', role: 'admin' });
   assert.equal(updateRes.status, 200);
 
-  const meRes = await request(app).get('/users/me').set('Authorization', `Bearer ${userToken}`);
-  assert.equal(meRes.status, 200);
-
   const deleteRes = await request(app)
-    .delete(`/users/${createdUserId}`)
-    .set('Authorization', `Bearer ${adminToken}`);
+    .delete(`/users/${createdUserId}`);
   assert.equal(deleteRes.status, 200);
 });
 

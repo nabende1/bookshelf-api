@@ -6,22 +6,12 @@ const { DB_NAME } = require('../config/db.config');
 const borrowingCollection = () => mongodb.getdatabase().db(DB_NAME).collection('borrowingRecords');
 const booksCollection = () => mongodb.getdatabase().db(DB_NAME).collection('books');
 
-const canManageBorrow = (record, requester) => {
-  const ownerId = record.userId.toString();
-  return requester.role === 'admin' || requester.userId === ownerId;
-};
-
 const getAll = async (req, res) => {
   try {
     const query = {};
 
     if (req.query.userId) {
-      if (req.user.role !== 'admin' && req.query.userId !== req.user.userId) {
-        return res.status(403).json({ error: 'Cannot view records for other users' });
-      }
       query.userId = new ObjectId(req.query.userId);
-    } else if (req.user.role !== 'admin') {
-      query.userId = new ObjectId(req.user.userId);
     }
 
     const records = await borrowingCollection().find(query).sort({ borrowDate: -1 }).toArray();
@@ -34,9 +24,9 @@ const getAll = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const { bookId, dueDate } = req.body;
-    if (!bookId || !dueDate) {
-      return res.status(400).json({ error: 'bookId and dueDate are required' });
+    const { bookId, dueDate, userId } = req.body;
+    if (!bookId || !dueDate || !userId) {
+      return res.status(400).json({ error: 'bookId, dueDate, and userId are required' });
     }
 
     const bookObjectId = new ObjectId(bookId);
@@ -51,7 +41,7 @@ const create = async (req, res) => {
 
     const record = {
       bookId: bookObjectId,
-      userId: new ObjectId(req.user.userId),
+      userId: new ObjectId(userId),
       borrowDate: new Date().toISOString(),
       dueDate: new Date(dueDate).toISOString(),
       returnDate: null,
@@ -72,10 +62,6 @@ const returnBorrow = async (req, res) => {
     const record = await borrowingCollection().findOne({ _id: new ObjectId(req.params.id) });
     if (!record) {
       return res.status(404).json({ error: 'Borrowing record not found' });
-    }
-
-    if (!canManageBorrow(record, req.user)) {
-      return res.status(403).json({ error: 'Not allowed to return this record' });
     }
 
     if (record.status === 'returned') {
@@ -108,10 +94,6 @@ const remove = async (req, res) => {
     const record = await borrowingCollection().findOne({ _id: new ObjectId(req.params.id) });
     if (!record) {
       return res.status(404).json({ error: 'Borrowing record not found' });
-    }
-
-    if (!canManageBorrow(record, req.user)) {
-      return res.status(403).json({ error: 'Not allowed to delete this record' });
     }
 
     if (record.status === 'borrowed') {

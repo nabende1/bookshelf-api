@@ -7,11 +7,6 @@ const { sanitizeText } = require('../middleware/validation');
 const reviewsCollection = () => mongodb.getdatabase().db(DB_NAME).collection('reviews');
 const booksCollection = () => mongodb.getdatabase().db(DB_NAME).collection('books');
 
-const canManageReview = (review, requester) => {
-  const ownerId = review.userId.toString();
-  return requester.role === 'admin' || requester.userId === ownerId;
-};
-
 const getAll = async (req, res) => {
   try {
     const query = {};
@@ -43,10 +38,10 @@ const getSingle = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const { bookId, rating, comment } = req.body;
+    const { bookId, rating, comment, userId } = req.body;
 
-    if (!bookId || rating === undefined) {
-      return res.status(400).json({ error: 'bookId and rating are required' });
+    if (!bookId || rating === undefined || !userId) {
+      return res.status(400).json({ error: 'bookId, rating, and userId are required' });
     }
 
     const numericRating = Number.parseInt(rating, 10);
@@ -61,7 +56,7 @@ const create = async (req, res) => {
 
     const review = {
       bookId: new ObjectId(bookId),
-      userId: new ObjectId(req.user.userId),
+      userId: new ObjectId(userId),
       rating: numericRating,
       comment: sanitizeText(comment || ''),
       reviewDate: new Date().toISOString(),
@@ -81,10 +76,6 @@ const update = async (req, res) => {
     const review = await reviewsCollection().findOne({ _id: new ObjectId(req.params.id) });
     if (!review) {
       return res.status(404).json({ error: 'Review not found' });
-    }
-
-    if (!canManageReview(review, req.user)) {
-      return res.status(403).json({ error: 'Not allowed to update this review' });
     }
 
     const updateDoc = {};
@@ -119,10 +110,6 @@ const remove = async (req, res) => {
     const review = await reviewsCollection().findOne({ _id: new ObjectId(req.params.id) });
     if (!review) {
       return res.status(404).json({ error: 'Review not found' });
-    }
-
-    if (!canManageReview(review, req.user)) {
-      return res.status(403).json({ error: 'Not allowed to delete this review' });
     }
 
     await reviewsCollection().deleteOne({ _id: review._id });

@@ -1,7 +1,6 @@
 const express = require('express');
 
 const borrowingController = require('../controllers/borrowing');
-const { authenticate } = require('../middleware/auth');
 const {
   ensureObjectIdParam,
   validate,
@@ -12,15 +11,14 @@ const {
 
 const router = express.Router();
 
-router.get('/', authenticate, validate(borrowingQuerySchema, 'query'), borrowingController.getAll);
-router.post('/', authenticate, validate(borrowingCreateSchema), borrowingController.create);
+router.get('/', validate(borrowingQuerySchema, 'query'), borrowingController.getAll);
+router.post('/', validate(borrowingCreateSchema), borrowingController.create);
 router.put(
   '/:id/return',
-  authenticate,
   ensureObjectIdParam('id'),
   validate(borrowingReturnSchema),
   borrowingController.returnBorrow
 );
-router.delete('/:id', authenticate, ensureObjectIdParam('id'), borrowingController.remove);
+router.delete('/:id', ensureObjectIdParam('id'), borrowingController.remove);
 
 module.exports = router;

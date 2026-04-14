@@ -67,19 +67,20 @@ const getSingle = async (req, res) => {
 
 const getMe = async (req, res) => {
   try {
-    const user = await usersCollection().findOne({ _id: new ObjectId(req.user.userId) });
+    if (!req.query.userId) {
+      return res.status(400).json({ error: 'userId query parameter is required' });
+    }
+
+    const user = await usersCollection().findOne(
+      { _id: new ObjectId(req.query.userId) },
+      { projection: { oauthId: 1, displayName: 1, email: 1, avatarUrl: 1, role: 1, joinedDate: 1 } }
+    );
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    return res.status(200).json({
-      userId: user._id,
-      email: user.email,
-      displayName: user.displayName,
-      avatarUrl: user.avatarUrl,
-      joinedDate: user.joinedDate,
-      role: user.role || 'user'
-    });
+    return res.status(200).json(user);
   } catch (error) {
     console.error('Error fetching profile:', error);
     return res.status(500).json({ error: 'Failed to fetch profile' });
@@ -138,6 +139,10 @@ const update = async (req, res) => {
 
 const updateMe = async (req, res) => {
   try {
+    if (!req.params.id) {
+      return res.status(400).json({ error: 'User ID parameter is required' });
+    }
+
     const updateDoc = sanitizeUserPayload(req.body);
 
     delete updateDoc.role;
@@ -148,7 +153,7 @@ const updateMe = async (req, res) => {
     }
 
     const result = await usersCollection().updateOne(
-      { _id: new ObjectId(req.user.userId) },
+      { _id: new ObjectId(req.params.id) },
       { $set: updateDoc }
     );
 
@@ -161,6 +166,7 @@ const updateMe = async (req, res) => {
     if (error?.code === 11000) {
       return res.status(400).json({ error: 'User with the same email already exists' });
     }
+    console.error('Error updating profile:', error);
     return res.status(500).json({ error: 'Failed to update profile' });
   }
 };
@@ -192,7 +198,11 @@ const remove = async (req, res) => {
 
 const removeMe = async (req, res) => {
   try {
-    const userObjectId = new ObjectId(req.user.userId);
+    if (!req.params.id) {
+      return res.status(400).json({ error: 'User ID parameter is required' });
+    }
+
+    const userObjectId = new ObjectId(req.params.id);
 
     const [userResult] = await Promise.all([
       usersCollection().deleteOne({ _id: userObjectId }),
