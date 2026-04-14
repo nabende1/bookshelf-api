@@ -1,0 +1,183 @@
+{
+  "testData": {
+    "users": [
+      {
+        "displayName": "Alice Johnson",
+        "email": "alice.johnson@example.com",
+        "avatarUrl": "https://api.example.com/avatars/alice.jpg",
+        "role": "user"
+      },
+      {
+        "displayName": "Bob Smith",
+        "email": "bob.smith@example.com",
+        "avatarUrl": "https://api.example.com/avatars/bob.jpg",
+        "role": "admin"
+      },
+      {
+        "displayName": "Carol White",
+        "email": "carol.white@example.com",
+        "avatarUrl": "https://api.example.com/avatars/carol.jpg",
+        "role": "user"
+      }
+    ],
+    "books": [
+      {
+        "title": "The Hobbit",
+        "author": "J.R.R. Tolkien",
+        "isbn": "9780547928227",
+        "genre": "Fantasy",
+        "publisher": "Houghton Mifflin Harcourt",
+        "publishYear": 1937,
+        "pages": 310,
+        "language": "English",
+        "description": "A fantasy adventure about a hobbit's journey to reclaim treasure guarded by a dragon.",
+        "coverUrl": "https://covers.example.com/hobbit.jpg",
+        "availableCopies": 10
+      },
+      {
+        "title": "To Kill a Mockingbird",
+        "author": "Harper Lee",
+        "isbn": "9780061120084",
+        "genre": "Fiction",
+        "publisher": "Lippincott",
+        "publishYear": 1960,
+        "pages": 324,
+        "language": "English",
+        "description": "A gripping tale about racial injustice and childhood innocence in the American South.",
+        "coverUrl": "https://covers.example.com/mockingbird.jpg",
+        "availableCopies": 8
+      },
+      {
+        "title": "1984",
+        "author": "George Orwell",
+        "isbn": "9780451524935",
+        "genre": "Dystopian",
+        "publisher": "Signet Classics",
+        "publishYear": 1949,
+        "pages": 328,
+        "language": "English",
+        "description": "A dystopian novel set in a totalitarian society controlled by Big Brother.",
+        "coverUrl": "https://covers.example.com/1984.jpg",
+        "availableCopies": 12
+      },
+      {
+        "title": "Pride and Prejudice",
+        "author": "Jane Austen",
+        "isbn": "9780141439518",
+        "genre": "Romance",
+        "publisher": "Penguin Classics",
+        "publishYear": 1813,
+        "pages": 432,
+        "language": "English",
+        "description": "A classic romance novel about Elizabeth Bennet and Mr. Darcy.",
+        "coverUrl": "https://covers.example.com/pride-prejudice.jpg",
+        "availableCopies": 6
+      },
+      {
+        "title": "The Great Gatsby",
+        "author": "F. Scott Fitzgerald",
+        "isbn": "9780743273565",
+        "genre": "Fiction",
+        "publisher": "Scribner",
+        "publishYear": 1925,
+        "pages": 180,
+        "language": "English",
+        "description": "A classic American novel set in the Jazz Age about wealth and love.",
+        "coverUrl": "https://covers.example.com/gatsby.jpg",
+        "availableCopies": 5
+      }
+    ],
+    "reviews": [
+      {
+        "bookId": "BOOK_ID_1",
+        "userId": "USER_ID_1",
+        "rating": 5,
+        "comment": "An absolutely captivating adventure! Tolkien's world-building is masterful."
+      },
+      {
+        "bookId": "BOOK_ID_1",
+        "userId": "USER_ID_2",
+        "rating": 4,
+        "comment": "Great story, though the middle section drags a bit."
+      },
+      {
+        "bookId": "BOOK_ID_2",
+        "userId": "USER_ID_1",
+        "rating": 5,
+        "comment": "A powerful exploration of morality and justice. Must-read!"
+      },
+      {
+        "bookId": "BOOK_ID_3",
+        "userId": "USER_ID_3",
+        "rating": 5,
+        "comment": "Chilling and thought-provoking. Highly relevant today."
+      },
+      {
+        "bookId": "BOOK_ID_4",
+        "userId": "USER_ID_2",
+        "rating": 4,
+        "comment": "Beautiful romance with sharp social commentary."
+      }
+    ],
+    "borrowing": [
+      {
+        "bookId": "BOOK_ID_1",
+        "userId": "USER_ID_1",
+        "dueDate": "2026-05-14T23:59:59.000Z"
+      },
+      {
+        "bookId": "BOOK_ID_2",
+        "userId": "USER_ID_2",
+        "dueDate": "2026-04-30T23:59:59.000Z"
+      },
+      {
+        "bookId": "BOOK_ID_3",
+        "userId": "USER_ID_3",
+        "dueDate": "2026-05-21T23:59:59.000Z"
+      }
+    ]
+  },
+  "updateExamples": {
+    "updateBook": {
+      "availableCopies": 7,
+      "description": "Updated description with more details about the book."
+    },
+    "updateUser": {
+      "displayName": "Alice Johnson Updated",
+      "email": "alice.newemail@example.com",
+      "role": "admin"
+    },
+    "updateReview": {
+      "rating": 4,
+      "comment": "Updated review comment with new thoughts.",
+      "helpfulCount": 15
+    },
+    "returnBorrowingRecord": {
+      "fines": 0
+    }
+  },
+  "testSequence": {
+    "description": "Follow this order for complete CRUD testing",
+    "steps": [
+      "1. Create 3 users from users array",
+      "2. Create 5 books from books array",
+      "3. Create reviews using the stored user and book IDs",
+      "4. Create borrowing records using the stored user and book IDs",
+      "5. Test GET single for each collection",
+      "6. Test GET all for each collection",
+      "7. Test UPDATE using updateExamples",
+      "8. Test DELETE in reverse order: reviews → borrowing → books → users",
+      "9. Verify deletions with GET all requests"
+    ]
+  },
+  "curlTemplates": {
+    "createBook": "curl -X POST http://localhost:8080/books -H 'Content-Type: application/json' -d '{JSON_OBJECT}'",
+    "createUser": "curl -X POST http://localhost:8080/users -H 'Content-Type: application/json' -d '{JSON_OBJECT}'",
+    "createReview": "curl -X POST http://localhost:8080/reviews -H 'Content-Type: application/json' -d '{JSON_OBJECT}'",
+    "createBorrowing": "curl -X POST http://localhost:8080/borrowing -H 'Content-Type: application/json' -d '{JSON_OBJECT}'",
+    "getAll": "curl http://localhost:8080/{COLLECTION}",
+    "getSingle": "curl http://localhost:8080/{COLLECTION}/{ID}",
+    "update": "curl -X PUT http://localhost:8080/{COLLECTION}/{ID} -H 'Content-Type: application/json' -d '{JSON_OBJECT}'",
+    "delete": "curl -X DELETE http://localhost:8080/{COLLECTION}/{ID}"
+  }
+}
