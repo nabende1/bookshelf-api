@@ -6,6 +6,7 @@ const { sanitizeText } = require('../middleware/validation');
 
 const reviewsCollection = () => mongodb.getdatabase().db(DB_NAME).collection('reviews');
 const booksCollection = () => mongodb.getdatabase().db(DB_NAME).collection('books');
+const usersCollection = () => mongodb.getdatabase().db(DB_NAME).collection('users');
 
 const getAll = async (req, res) => {
   try {
@@ -38,7 +39,7 @@ const getSingle = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const { bookId, rating, comment, userId } = req.body;
+    const { bookId, rating, comment, userId, reviewDate, helpfulCount } = req.body;
 
     if (!bookId || rating === undefined || !userId) {
       return res.status(400).json({ error: 'bookId, rating, and userId are required' });
@@ -58,13 +59,23 @@ const create = async (req, res) => {
       return res.status(404).json({ error: 'Book not found' });
     }
 
+    const targetUser = await usersCollection().findOne({ _id: new ObjectId(userId) });
+    if (!targetUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const parsedReviewDate = reviewDate ? new Date(reviewDate) : new Date();
+    if (Number.isNaN(parsedReviewDate.getTime())) {
+      return res.status(400).json({ error: 'reviewDate must be a valid ISO datetime' });
+    }
+
     const review = {
       bookId: new ObjectId(bookId),
       userId: new ObjectId(userId),
       rating: numericRating,
       comment: sanitizeText(comment || ''),
-      reviewDate: new Date().toISOString(),
-      helpfulCount: 0
+      reviewDate: parsedReviewDate,
+      helpfulCount: Number.isInteger(helpfulCount) ? helpfulCount : 0
     };
 
     const result = await reviewsCollection().insertOne(review);
@@ -72,6 +83,9 @@ const create = async (req, res) => {
   } catch (error) {
     if (error?.code === 11000) {
       return res.status(400).json({ error: 'Duplicate review data violates a unique constraint' });
+    }
+    if (error?.code === 121) {
+      return res.status(400).json({ error: 'Review payload does not satisfy database validation rules' });
     }
     console.error('Error creating review:', error);
     return res.status(500).json({ error: 'Failed to create review' });
