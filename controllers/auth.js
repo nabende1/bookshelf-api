@@ -67,7 +67,7 @@ const authCallback = async (req, res) => {
       { expiresIn: JWT_EXPIRES_IN }
     );
 
-    if (FRONTEND_URL) {
+    if (FRONTEND_URL && !req.query.json) {
       const callbackUrl = new URL(FRONTEND_URL);
       callbackUrl.searchParams.set('token', token);
       callbackUrl.searchParams.set('userId', user._id.toString());
