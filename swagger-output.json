@@ -46,143 +46,6 @@
         }
       }
     },
-    "/auth/github-info": {
-      "get": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/auth/login": {
-      "get": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Start login with GitHub OAuth",
-        "description": "Redirects to GitHub for authentication. Returns token after successful login.",
-        "responses": {
-          "200": {
-            "description": "OAuth helper response for API clients"
-          },
-          "302": {
-            "description": "Redirect to GitHub OAuth"
-          },
-          "500": {
-            "description": "GitHub OAuth not configured on server"
-          }
-        }
-      }
-    },
-    "/auth/github": {
-      "get": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Start GitHub OAuth flow",
-        "description": "Returns JSON helper in API clients and redirects to GitHub in browser flow.",
-        "parameters": [
-          {
-            "name": "redirect",
-            "in": "query",
-            "description": "Set to true to force redirect flow.",
-            "type": "boolean"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OAuth helper response for API clients"
-          },
-          "302": {
-            "description": "Redirect to GitHub OAuth"
-          },
-          "500": {
-            "description": "GitHub OAuth not configured on server"
-          }
-        }
-      }
-    },
-    "/auth/callback": {
-      "get": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "GitHub OAuth callback",
-        "description": "Handles the redirect from GitHub after user authorises the app. Not intended to be called directly from API clients.",
-        "parameters": [
-          {
-            "name": "code",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "json",
-            "in": "query",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Authentication successful, returns JWT and user object"
-          },
-          "302": {
-            "description": "Redirects to FRONTEND_URL with token if configured"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Authentication failed or denied"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/auth/failure": {
-      "get": {
-        "description": "",
-        "responses": {
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      }
-    },
-    "/auth/logout": {
-      "post": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Logout user",
-        "description": "JWT-based logout. Client should delete the token from local storage.",
-        "responses": {
-          "200": {
-            "description": "Logout successful"
-          }
-        }
-      }
-    },
-    "/auth/test-token": {
-      "get": {
-        "tags": [
-          "Auth"
-        ],
-        "summary": "Get test token (Development Only)",
-        "description": "Returns a test JWT token for development/testing without needing actual GitHub login. Only available in development environment.",
-        "responses": {
-          "200": {
-            "description": "Test token generated successfully"
-          },
-          "403": {
-            "description": "Not available in production"
-          }
-        }
-      }
-    },
     "/books/": {
       "get": {
         "description": "",
@@ -226,17 +89,15 @@
         }
       },
       "post": {
-        "tags": ["Books"],
-        "summary": "Create a new book",
         "description": "",
         "parameters": [
           {
             "name": "body",
             "in": "body",
-            "required": true,
             "schema": {
               "$ref": "#/definitions/Book"
-            }
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -279,8 +140,6 @@
         }
       },
       "put": {
-        "tags": ["Books"],
-        "summary": "Update book by ID",
         "description": "",
         "parameters": [
           {
@@ -362,17 +221,15 @@
         }
       },
       "post": {
-        "tags": ["Reviews"],
-        "summary": "Create a new review",
         "description": "",
         "parameters": [
           {
             "name": "body",
             "in": "body",
-            "required": true,
             "schema": {
               "$ref": "#/definitions/Review"
-            }
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -418,8 +275,6 @@
         }
       },
       "put": {
-        "tags": ["Reviews"],
-        "summary": "Update review by ID",
         "description": "",
         "parameters": [
           {
@@ -431,10 +286,10 @@
           {
             "name": "body",
             "in": "body",
-            "required": true,
             "schema": {
               "$ref": "#/definitions/Review"
-            }
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -513,6 +368,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
           }
         ],
         "responses": {
@@ -580,7 +443,17 @@
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ]
       }
     },
     "/users/{id}": {
@@ -610,8 +483,6 @@
         }
       },
       "put": {
-        "tags": ["Users"],
-        "summary": "Update user by admin",
         "description": "",
         "parameters": [
           {
@@ -693,17 +564,15 @@
         }
       },
       "post": {
-        "tags": ["Borrowing"],
-        "summary": "Create a new borrowing record",
         "description": "",
         "parameters": [
           {
             "name": "body",
             "in": "body",
-            "required": true,
             "schema": {
               "$ref": "#/definitions/BorrowingRecord"
-            }
+            },
+            "required": true
           }
         ],
         "responses": {
@@ -721,8 +590,6 @@
     },
     "/borrowing/{id}/return": {
       "put": {
-        "tags": ["Borrowing"],
-        "summary": "Return a borrowed book",
         "description": "",
         "parameters": [
           {
@@ -734,10 +601,10 @@
           {
             "name": "body",
             "in": "body",
-            "required": false,
             "schema": {
               "$ref": "#/definitions/BorrowingRecord"
-            }
+            },
+            "required": false
           }
         ],
         "responses": {

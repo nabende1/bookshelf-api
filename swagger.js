@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const swaggerAutogen = require('swagger-autogen')();
 
 const doc = {
@@ -28,6 +30,164 @@ const doc = {
       description: 'Borrowing record endpoints'
     }
   ],
+  paths: {
+    '/books/': {
+      post: {
+        tags: ['Books'],
+        summary: 'Create a new book',
+        parameters: [
+          {
+            name: 'body',
+            in: 'body',
+            required: true,
+            schema: { $ref: '#/definitions/Book' }
+          }
+        ]
+      }
+    },
+    '/books/{id}': {
+      put: {
+        tags: ['Books'],
+        summary: 'Update book by ID',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            type: 'string'
+          },
+          {
+            name: 'body',
+            in: 'body',
+            required: true,
+            schema: { $ref: '#/definitions/Book' }
+          }
+        ]
+      }
+    },
+    '/reviews/': {
+      post: {
+        tags: ['Reviews'],
+        summary: 'Create a new review',
+        parameters: [
+          {
+            name: 'body',
+            in: 'body',
+            required: true,
+            schema: { $ref: '#/definitions/Review' }
+          }
+        ]
+      }
+    },
+    '/reviews/{id}': {
+      put: {
+        tags: ['Reviews'],
+        summary: 'Update review by ID',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            type: 'string'
+          },
+          {
+            name: 'body',
+            in: 'body',
+            required: true,
+            schema: { $ref: '#/definitions/Review' }
+          }
+        ]
+      }
+    },
+    '/users/': {
+      post: {
+        tags: ['Users'],
+        summary: 'Create a new user',
+        parameters: [
+          {
+            name: 'body',
+            in: 'body',
+            required: true,
+            schema: { $ref: '#/definitions/User' }
+          }
+        ]
+      }
+    },
+    '/users/{id}': {
+      put: {
+        tags: ['Users'],
+        summary: 'Update user by ID',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            type: 'string'
+          },
+          {
+            name: 'body',
+            in: 'body',
+            required: true,
+            schema: { $ref: '#/definitions/User' }
+          }
+        ]
+      }
+    },
+    '/users/me/{id}': {
+      put: {
+        tags: ['Users'],
+        summary: 'Update my profile by ID',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            type: 'string'
+          },
+          {
+            name: 'body',
+            in: 'body',
+            required: true,
+            schema: { $ref: '#/definitions/User' }
+          }
+        ]
+      }
+    },
+    '/borrowing/': {
+      post: {
+        tags: ['Borrowing'],
+        summary: 'Create a new borrowing record',
+        parameters: [
+          {
+            name: 'body',
+            in: 'body',
+            required: true,
+            schema: { $ref: '#/definitions/BorrowingRecord' }
+          }
+        ]
+      }
+    },
+    '/borrowing/{id}/return': {
+      put: {
+        tags: ['Borrowing'],
+        summary: 'Return a borrowed book',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            type: 'string'
+          },
+          {
+            name: 'body',
+            in: 'body',
+            required: false,
+            schema: { $ref: '#/definitions/BorrowingRecord' }
+          }
+        ]
+      }
+    }
+  },
 
   definitions: {
     User: {
@@ -89,4 +249,52 @@ const doc = {
 const outputFile = './swagger-output.json';
 const endpointsFiles = ['./routes/index.js'];
 
-swaggerAutogen(outputFile, endpointsFiles, doc);
+const ensureBodyParameter = (swaggerDoc, route, method, ref, required = true) => {
+  if (!swaggerDoc.paths?.[route]?.[method]) return;
+
+  const operation = swaggerDoc.paths[route][method];
+  operation.parameters = operation.parameters || [];
+
+  const bodyIndex = operation.parameters.findIndex((param) => param.in === 'body');
+  const bodyParam = {
+    name: 'body',
+    in: 'body',
+    required,
+    schema: { $ref: ref }
+  };
+
+  if (bodyIndex >= 0) {
+    operation.parameters[bodyIndex] = {
+      ...operation.parameters[bodyIndex],
+      ...bodyParam
+    };
+  } else {
+    operation.parameters.push(bodyParam);
+  }
+};
+
+const enforceBodyParameters = () => {
+  const outputPath = path.resolve(__dirname, outputFile);
+  const swaggerDoc = JSON.parse(fs.readFileSync(outputPath, 'utf8'));
+
+  ensureBodyParameter(swaggerDoc, '/books/', 'post', '#/definitions/Book');
+  ensureBodyParameter(swaggerDoc, '/books/{id}', 'put', '#/definitions/Book');
+  ensureBodyParameter(swaggerDoc, '/reviews/', 'post', '#/definitions/Review');
+  ensureBodyParameter(swaggerDoc, '/reviews/{id}', 'put', '#/definitions/Review');
+  ensureBodyParameter(swaggerDoc, '/users/', 'post', '#/definitions/User');
+  ensureBodyParameter(swaggerDoc, '/users/{id}', 'put', '#/definitions/User');
+  ensureBodyParameter(swaggerDoc, '/users/me/{id}', 'put', '#/definitions/User');
+  ensureBodyParameter(swaggerDoc, '/borrowing/', 'post', '#/definitions/BorrowingRecord');
+  ensureBodyParameter(swaggerDoc, '/borrowing/{id}/return', 'put', '#/definitions/BorrowingRecord', false);
+
+  fs.writeFileSync(outputPath, JSON.stringify(swaggerDoc, null, 2));
+};
+
+swaggerAutogen(outputFile, endpointsFiles, doc)
+  .then(() => {
+    enforceBodyParameters();
+  })
+  .catch((error) => {
+    console.error('Swagger generation failed:', error);
+    process.exit(1);
+  });
