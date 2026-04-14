@@ -49,6 +49,10 @@ const create = async (req, res) => {
       return res.status(400).json({ error: 'Rating must be between 1 and 5' });
     }
 
+    if (!ObjectId.isValid(bookId) || !ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'bookId and userId must be valid ObjectId values' });
+    }
+
     const targetBook = await booksCollection().findOne({ _id: new ObjectId(bookId) });
     if (!targetBook) {
       return res.status(404).json({ error: 'Book not found' });
@@ -66,6 +70,9 @@ const create = async (req, res) => {
     const result = await reviewsCollection().insertOne(review);
     return res.status(201).json({ message: 'Review created', id: result.insertedId });
   } catch (error) {
+    if (error?.code === 11000) {
+      return res.status(400).json({ error: 'Duplicate review data violates a unique constraint' });
+    }
     console.error('Error creating review:', error);
     return res.status(500).json({ error: 'Failed to create review' });
   }

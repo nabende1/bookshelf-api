@@ -72,6 +72,7 @@ const reviewsQuerySchema = z.object({
 
 const reviewCreateSchema = z.object({
   bookId: objectIdSchema,
+  userId: objectIdSchema,
   rating: z.coerce.number().int().min(1).max(5),
   comment: z.string().trim().max(2000).optional().default('')
 });
