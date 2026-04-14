@@ -93,6 +93,7 @@ const borrowingQuerySchema = z.object({
 
 const borrowingCreateSchema = z.object({
   bookId: objectIdSchema,
+  userId: objectIdSchema,
   dueDate: z.string().datetime()
 });
 

@@ -29,6 +29,10 @@ const create = async (req, res) => {
       return res.status(400).json({ error: 'bookId, dueDate, and userId are required' });
     }
 
+    if (!ObjectId.isValid(bookId) || !ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'bookId and userId must be valid ObjectId values' });
+    }
+
     const bookObjectId = new ObjectId(bookId);
     const bookUpdate = await booksCollection().updateOne(
       { _id: bookObjectId, availableCopies: { $gt: 0 } },
