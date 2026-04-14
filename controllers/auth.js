@@ -87,7 +87,8 @@ const authCallback = async (req, res) => {
         role: user.role || 'user'
       }
     });
-  } catch {
+  } catch (error) {
+    console.error('Error in authentication callback:', error);
     return res.status(500).json({ error: 'Authentication failed' });
   }
 };

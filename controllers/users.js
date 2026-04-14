@@ -41,7 +41,8 @@ const getAll = async (req, res) => {
       .toArray();
 
     return res.status(200).json(users);
-  } catch {
+  } catch (error) {
+    console.error('Error fetching users:', error);
     return res.status(500).json({ error: 'Failed to fetch users' });
   }
 };
@@ -58,7 +59,8 @@ const getSingle = async (req, res) => {
     }
 
     return res.status(200).json(user);
-  } catch {
+  } catch (error) {
+    console.error('Error fetching user:', error);
     return res.status(500).json({ error: 'Failed to fetch user' });
   }
 };
@@ -78,7 +80,8 @@ const getMe = async (req, res) => {
       joinedDate: user.joinedDate,
       role: user.role || 'user'
     });
-  } catch {
+  } catch (error) {
+    console.error('Error fetching profile:', error);
     return res.status(500).json({ error: 'Failed to fetch profile' });
   }
 };
@@ -181,7 +184,8 @@ const remove = async (req, res) => {
     }
 
     return res.status(200).json({ message: 'User deleted' });
-  } catch {
+  } catch (error) {
+    console.error('Error deleting user:', error);
     return res.status(500).json({ error: 'Failed to delete user' });
   }
 };
@@ -205,7 +209,8 @@ const removeMe = async (req, res) => {
     }
 
     return res.status(200).json({ message: 'Profile deleted' });
-  } catch {
+  } catch (error) {
+    console.error('Error deleting profile:', error);
     return res.status(500).json({ error: 'Failed to delete profile' });
   }
 };

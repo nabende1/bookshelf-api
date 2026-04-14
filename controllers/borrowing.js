@@ -26,7 +26,8 @@ const getAll = async (req, res) => {
 
     const records = await borrowingCollection().find(query).sort({ borrowDate: -1 }).toArray();
     return res.status(200).json(records);
-  } catch {
+  } catch (error) {
+    console.error('Error fetching borrowing records:', error);
     return res.status(500).json({ error: 'Failed to fetch borrowing records' });
   }
 };
@@ -60,7 +61,8 @@ const create = async (req, res) => {
 
     const result = await borrowingCollection().insertOne(record);
     return res.status(201).json({ message: 'Book borrowed', id: result.insertedId });
-  } catch {
+  } catch (error) {
+    console.error('Error creating borrowing record:', error);
     return res.status(500).json({ error: 'Failed to create borrowing record' });
   }
 };
@@ -95,7 +97,8 @@ const returnBorrow = async (req, res) => {
     ]);
 
     return res.status(200).json({ message: 'Book returned' });
-  } catch {
+  } catch (error) {
+    console.error('Error returning book:', error);
     return res.status(500).json({ error: 'Failed to return book' });
   }
 };
@@ -117,7 +120,8 @@ const remove = async (req, res) => {
 
     await borrowingCollection().deleteOne({ _id: record._id });
     return res.status(200).json({ message: 'Borrowing record deleted' });
-  } catch {
+  } catch (error) {
+    console.error('Error deleting borrowing record:', error);
     return res.status(500).json({ error: 'Failed to delete borrowing record' });
   }
 };

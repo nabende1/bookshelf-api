@@ -21,7 +21,8 @@ const getAll = async (req, res) => {
 
     const items = await reviewsCollection().find(query).sort({ reviewDate: -1 }).toArray();
     return res.status(200).json(items);
-  } catch {
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
     return res.status(500).json({ error: 'Failed to fetch reviews' });
   }
 };
@@ -34,7 +35,8 @@ const getSingle = async (req, res) => {
     }
 
     return res.status(200).json(review);
-  } catch {
+  } catch (error) {
+    console.error('Error fetching review:', error);
     return res.status(500).json({ error: 'Failed to fetch review' });
   }
 };
@@ -68,7 +70,8 @@ const create = async (req, res) => {
 
     const result = await reviewsCollection().insertOne(review);
     return res.status(201).json({ message: 'Review created', id: result.insertedId });
-  } catch {
+  } catch (error) {
+    console.error('Error creating review:', error);
     return res.status(500).json({ error: 'Failed to create review' });
   }
 };
@@ -105,7 +108,8 @@ const update = async (req, res) => {
 
     await reviewsCollection().updateOne({ _id: review._id }, { $set: updateDoc });
     return res.status(200).json({ message: 'Review updated' });
-  } catch {
+  } catch (error) {
+    console.error('Error updating review:', error);
     return res.status(500).json({ error: 'Failed to update review' });
   }
 };
@@ -123,7 +127,8 @@ const remove = async (req, res) => {
 
     await reviewsCollection().deleteOne({ _id: review._id });
     return res.status(200).json({ message: 'Review deleted' });
-  } catch {
+  } catch (error) {
+    console.error('Error deleting review:', error);
     return res.status(500).json({ error: 'Failed to delete review' });
   }
 };

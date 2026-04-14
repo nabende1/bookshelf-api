@@ -36,7 +36,8 @@ const getAll = async (req, res) => {
         totalPages: Math.ceil(total / pageSize)
       }
     });
-  } catch {
+  } catch (error) {
+    console.error('Error fetching books:', error);
     return res.status(500).json({ error: 'Failed to fetch books' });
   }
 };
@@ -51,7 +52,8 @@ const getSingle = async (req, res) => {
     }
 
     return res.status(200).json(book);
-  } catch {
+  } catch (error) {
+    console.error('Error fetching book:', error);
     return res.status(500).json({ error: 'Failed to fetch book' });
   }
 };
@@ -107,7 +109,8 @@ const create = async (req, res) => {
 
     const result = await booksCollection().insertOne(book);
     return res.status(201).json({ message: 'Book created', id: result.insertedId });
-  } catch {
+  } catch (error) {
+    console.error('Error creating book:', error);
     return res.status(500).json({ error: 'Failed to create book' });
   }
 };
@@ -170,7 +173,8 @@ const update = async (req, res) => {
     }
 
     return res.status(200).json({ message: 'Book updated' });
-  } catch {
+  } catch (error) {
+    console.error('Error updating book:', error);
     return res.status(500).json({ error: 'Failed to update book' });
   }
 };
@@ -182,7 +186,8 @@ const remove = async (req, res) => {
       return res.status(404).json({ error: 'Book not found' });
     }
     return res.status(200).json({ message: 'Book deleted' });
-  } catch {
+  } catch (error) {
+    console.error('Error deleting book:', error);
     return res.status(500).json({ error: 'Failed to delete book' });
   }
 };
