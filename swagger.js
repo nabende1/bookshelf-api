@@ -28,7 +28,14 @@ const doc = {
       description: 'Borrowing record endpoints'
     }
   ],
+
   definitions: {
+    User: {
+      displayName: 'John Doe',
+      email: 'john@example.com',
+      avatarUrl: 'https://example.com/avatar.png',
+      role: 'user'
+    },
     Book: {
       title: 'Atomic Habits',
       author: 'James Clear',

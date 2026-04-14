@@ -6,14 +6,11 @@ router.get('/', (req, res) => {
     endpoints: {
       books: 'GET /books',
       reviews: 'GET /reviews',
-      users: 'GET /users/me',
-      borrowing: 'GET /borrowing',
-      auth: 'GET /auth/github'
+      users: 'GET /users',
+      borrowing: 'GET /borrowing'
     }
   });
 });
-
-router.use('/auth', require('./auth'));
 router.use('/books', require('./books'));
 router.use('/reviews', require('./reviews'));
 router.use('/users', require('./users'));

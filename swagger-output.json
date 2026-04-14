@@ -226,48 +226,16 @@
         }
       },
       "post": {
+        "tags": ["Books"],
+        "summary": "Create a new book",
         "description": "",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "title": {
-                  "example": "any"
-                },
-                "author": {
-                  "example": "any"
-                },
-                "isbn": {
-                  "example": "any"
-                },
-                "genre": {
-                  "example": "any"
-                },
-                "publisher": {
-                  "example": "any"
-                },
-                "publishYear": {
-                  "example": "any"
-                },
-                "pages": {
-                  "example": "any"
-                },
-                "language": {
-                  "example": "any"
-                },
-                "description": {
-                  "example": "any"
-                },
-                "coverUrl": {
-                  "example": "any"
-                },
-                "availableCopies": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/Book"
             }
           }
         ],
@@ -311,6 +279,8 @@
         }
       },
       "put": {
+        "tags": ["Books"],
+        "summary": "Update book by ID",
         "description": "",
         "parameters": [
           {
@@ -318,6 +288,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Book"
+            }
           }
         ],
         "responses": {
@@ -384,27 +362,16 @@
         }
       },
       "post": {
+        "tags": ["Reviews"],
+        "summary": "Create a new review",
         "description": "",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "bookId": {
-                  "example": "any"
-                },
-                "rating": {
-                  "example": "any"
-                },
-                "comment": {
-                  "example": "any"
-                },
-                "userId": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/Review"
             }
           }
         ],
@@ -451,6 +418,8 @@
         }
       },
       "put": {
+        "tags": ["Reviews"],
+        "summary": "Update review by ID",
         "description": "",
         "parameters": [
           {
@@ -462,19 +431,9 @@
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "rating": {
-                  "example": "any"
-                },
-                "comment": {
-                  "example": "any"
-                },
-                "helpfulCount": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/Review"
             }
           }
         ],
@@ -651,6 +610,8 @@
         }
       },
       "put": {
+        "tags": ["Users"],
+        "summary": "Update user by admin",
         "description": "",
         "parameters": [
           {
@@ -658,6 +619,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
           }
         ],
         "responses": {
@@ -724,24 +693,16 @@
         }
       },
       "post": {
+        "tags": ["Borrowing"],
+        "summary": "Create a new borrowing record",
         "description": "",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "bookId": {
-                  "example": "any"
-                },
-                "dueDate": {
-                  "example": "any"
-                },
-                "userId": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/BorrowingRecord"
             }
           }
         ],
@@ -760,6 +721,8 @@
     },
     "/borrowing/{id}/return": {
       "put": {
+        "tags": ["Borrowing"],
+        "summary": "Return a borrowed book",
         "description": "",
         "parameters": [
           {
@@ -771,13 +734,9 @@
           {
             "name": "body",
             "in": "body",
+            "required": false,
             "schema": {
-              "type": "object",
-              "properties": {
-                "fines": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/BorrowingRecord"
             }
           }
         ],
@@ -826,6 +785,27 @@
     }
   },
   "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "example": "John Doe"
+        },
+        "email": {
+          "type": "string",
+          "example": "john@example.com"
+        },
+        "avatarUrl": {
+          "type": "string",
+          "example": "https://example.com/avatar.png"
+        },
+        "role": {
+          "type": "string",
+          "example": "user"
+        }
+      }
+    },
     "Book": {
       "type": "object",
       "properties": {

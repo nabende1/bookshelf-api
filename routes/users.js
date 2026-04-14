@@ -19,7 +19,23 @@ router.get(
   ensureObjectIdParam('id'),
   usersController.getSingle
 );
+
+// #swagger.tags = ['Users']
+// #swagger.summary = 'Create a new user'
+// #swagger.parameters['body'] = {
+//   in: 'body',
+//   required: true,
+//   schema: { $ref: '#/definitions/User' }
+// }
 router.post('/', validate(userCreateSchema), usersController.create);
+
+// #swagger.tags = ['Users']
+// #swagger.summary = 'Update user by admin'
+// #swagger.parameters['body'] = {
+//   in: 'body',
+//   required: true,
+//   schema: { $ref: '#/definitions/User' }
+// }
 router.put(
   '/:id',
   ensureObjectIdParam('id'),

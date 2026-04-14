@@ -5,12 +5,10 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const passport = require('passport');
 const rateLimit = require('express-rate-limit');
 const swaggerUi = require('swagger-ui-express');
 
 const swaggerDocument = require('./swagger-output.json');
-const configurePassport = require('./config/passport.config');
 const {
   isProd,
   CORS_ALLOWED_ORIGINS,
@@ -22,8 +20,6 @@ const { notFoundHandler, errorHandler } = require('./middleware/error-handler');
 const createApp = () => {
   const app = express();
 
-  configurePassport(passport);
-
   if (process.env.TRUST_PROXY === 'true') {
     app.set('trust proxy', 1);
   }
@@ -34,7 +30,8 @@ const createApp = () => {
         return callback(null, true);
       }
 
-      if (!isProd && CORS_ALLOWED_ORIGINS.length === 0) {
+      // Allow all localhost in development
+      if (!isProd && origin.includes('localhost')) {
         return callback(null, true);
       }
 
@@ -70,8 +67,7 @@ const createApp = () => {
     .use(limiter)
     .use(morgan(':method :url :status :response-time ms reqId=:requestId'))
     .use(express.json())
-    .use(express.urlencoded({ extended: true }))
-    .use(passport.initialize());
+    .use(express.urlencoded({ extended: true }));
 
   app.get('/swagger.json', (req, res) => {
     const forwardedProto = req.get('x-forwarded-proto');

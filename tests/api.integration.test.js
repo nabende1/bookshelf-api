@@ -101,17 +101,6 @@ test.after(async () => {
   }
 });
 
-test('auth routes return expected responses', async () => {
-  const infoRes = await request(app).get('/auth/github-info');
-  assert.equal(infoRes.status, 200);
-
-  const githubRes = await request(app).get('/auth/github');
-  assert.ok([302, 500].includes(githubRes.status));
-
-  const failureRes = await request(app).get('/auth/failure');
-  assert.equal(failureRes.status, 401);
-});
-
 test('books CRUD flow works', async () => {
   const basePayload = {
     title: 'Integration Testing Guide',
