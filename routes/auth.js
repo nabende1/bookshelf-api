@@ -8,6 +8,32 @@ const router = express.Router();
 
 router.get('/github-info', authController.getGithubAuthUrl);
 
+// Login endpoint (alias for /github)
+router.get('/login', (req, res, next) => {
+  // #swagger.tags = ['Auth']
+  // #swagger.summary = 'Start login with GitHub OAuth'
+  // #swagger.description = 'Redirects to GitHub for authentication. Returns token after successful login.'
+  // #swagger.responses[200] = { description: 'OAuth helper response for API clients' }
+  // #swagger.responses[302] = { description: 'Redirect to GitHub OAuth' }
+  // #swagger.responses[500] = { description: 'GitHub OAuth not configured on server' }
+  if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
+    return res.status(500).json({ error: 'GitHub OAuth is not configured on the server' });
+  }
+
+  const acceptHeader = req.get('accept') || '';
+  if (acceptHeader.includes('application/json')) {
+    const loginPath = '/auth/login?redirect=true';
+    return res.status(200).json({
+      message:
+        'OAuth login requires browser navigation. Open loginPath in a browser tab to continue.',
+      loginPath,
+      loginUrl: `${req.protocol}://${req.get('host')}${loginPath}`
+    });
+  }
+
+  return passport.authenticate('github', { scope: ['user:email'], session: false })(req, res, next);
+});
+
 router.get('/github', (req, res, next) => {
   // #swagger.tags = ['Auth']
   // #swagger.summary = 'Start GitHub OAuth flow'
@@ -61,5 +87,8 @@ router.get(
   authController.authCallback
 );
 router.get('/failure', authController.authFailure);
+
+// Logout endpoint
+router.post('/logout', authController.logout);
 
 module.exports = router;

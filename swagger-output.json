@@ -68,6 +68,26 @@
         }
       }
     },
+    "/auth/login": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Start login with GitHub OAuth",
+        "description": "Redirects to GitHub for authentication. Returns token after successful login.",
+        "responses": {
+          "200": {
+            "description": "OAuth helper response for API clients"
+          },
+          "302": {
+            "description": "Redirect to GitHub OAuth"
+          },
+          "500": {
+            "description": "GitHub OAuth not configured on server"
+          }
+        }
+      }
+    },
     "/auth/github": {
       "get": {
         "tags": [
@@ -135,6 +155,20 @@
         "responses": {
           "401": {
             "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Logout user",
+        "description": "JWT-based logout. Client should delete the token from local storage.",
+        "responses": {
+          "200": {
+            "description": "Logout successful"
           }
         }
       }

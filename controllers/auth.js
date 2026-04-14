@@ -97,8 +97,17 @@ const authFailure = (req, res) => {
   return res.status(401).json({ error: 'GitHub OAuth login failed' });
 };
 
+const logout = (req, res) => {
+  // #swagger.tags = ['Auth']
+  // #swagger.summary = 'Logout user'
+  // #swagger.description = 'JWT-based logout. Client should delete the token from local storage.'
+  // #swagger.responses[200] = { description: 'Logout successful' }
+  return res.status(200).json({ message: 'Logout successful. Please delete your token.' });
+};
+
 module.exports = {
   getGithubAuthUrl,
   authCallback,
-  authFailure
+  authFailure,
+  logout
 };
