@@ -105,9 +105,46 @@ const logout = (req, res) => {
   return res.status(200).json({ message: 'Logout successful. Please delete your token.' });
 };
 
+const getTestToken = (req, res) => {
+  // #swagger.tags = ['Auth']
+  // #swagger.summary = 'Get test token (Development Only)'
+  // #swagger.description = 'Returns a test JWT token for development/testing without needing actual GitHub login. Only available in development environment.'
+  // #swagger.responses[200] = { description: 'Test token generated successfully' }
+  // #swagger.responses[403] = { description: 'Not available in production' }
+  
+  const { NODE_ENV } = process.env;
+  if (NODE_ENV === 'production') {
+    return res.status(403).json({ error: 'Test token endpoint is only available in development' });
+  }
+
+  const testUserId = new ObjectId();
+  const testToken = jwt.sign(
+    {
+      userId: testUserId.toString(),
+      email: 'test@example.com',
+      displayName: 'Test User',
+      role: 'admin'
+    },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRES_IN }
+  );
+
+  return res.status(200).json({
+    token: testToken,
+    user: {
+      userId: testUserId.toString(),
+      email: 'test@example.com',
+      displayName: 'Test User',
+      role: 'admin'
+    },
+    note: 'This is a test token for development only. Expires in 2 hours.'
+  });
+};
+
 module.exports = {
   getGithubAuthUrl,
   authCallback,
   authFailure,
-  logout
+  logout,
+  getTestToken
 };

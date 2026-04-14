@@ -173,6 +173,23 @@
         }
       }
     },
+    "/auth/test-token": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Get test token (Development Only)",
+        "description": "Returns a test JWT token for development/testing without needing actual GitHub login. Only available in development environment.",
+        "responses": {
+          "200": {
+            "description": "Test token generated successfully"
+          },
+          "403": {
+            "description": "Not available in production"
+          }
+        }
+      }
+    },
     "/books/": {
       "get": {
         "description": "",

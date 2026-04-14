@@ -91,4 +91,7 @@ router.get('/failure', authController.authFailure);
 // Logout endpoint
 router.post('/logout', authController.logout);
 
+// Test token endpoint (development only)
+router.get('/test-token', authController.getTestToken);
+
 module.exports = router;
