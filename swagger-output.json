@@ -23,24 +23,12 @@
     {
       "name": "Borrowing",
       "description": "Borrowing record endpoints"
-    },
-    {
-      "name": "Auth",
-      "description": "OAuth and authentication endpoints"
     }
   ],
   "schemes": [
     "http",
     "https"
   ],
-  "securityDefinitions": {
-    "bearerAuth": {
-      "type": "apiKey",
-      "name": "Authorization",
-      "in": "header",
-      "description": "Enter token as: Bearer <JWT token>"
-    }
-  },
   "consumes": [
     "application/json"
   ],
@@ -1002,10 +990,5 @@
         }
       }
     }
-  },
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ]
+  }
 }
